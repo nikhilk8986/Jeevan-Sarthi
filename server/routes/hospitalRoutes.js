@@ -136,7 +136,8 @@ router.post('/donate',auth,async(req,res)=>{
         {username:donorUsername},
         {$inc:{
             donateCount:1
-        }}
+        }},
+         { upsert: true }
     )}
     catch{
         res.json({message: "Somethig went wrong during finding user!"})
@@ -145,7 +146,8 @@ router.post('/donate',auth,async(req,res)=>{
         {hospitalUsername:req.hospitalUsername},
         {$push:{
             donors:donorUsername
-        }}
+        }},
+         { upsert: true }
     )}
     catch{
         res.json({message: "Something went wronfg during finding hospital"})
@@ -154,10 +156,14 @@ router.post('/donate',auth,async(req,res)=>{
         {hospitalUsername:req.hospitalUsername},
         {$inc:{
             [bloodGroup]:volume
-        }}
+        }},
+         { upsert: true }
     )}
     catch{
         res.json({message: "Something went wrong during updating blood record"})
     }
+    res.json({
+        message:"donor details added"
+    })
 })
 module.exports=router;
