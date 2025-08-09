@@ -6,6 +6,20 @@ const JWT_SECRET="sayan_manna";
 const { UserModel}=require("../db/db");
 router.use(express.json());
 
+function auth(req,res,next){
+    const token=req.headers.token;
+    const decodeData=jwt.verify(token,JWT_SECRET);
+
+    if(decodeData.username){
+        req.username=decodeData.username;
+        next();
+    }
+    else {
+        res.json({
+            message:"you are not logged in"
+        })
+    }
+}
 
 router.post('/signup',async(req,res)=>{
     const username=req.body.username;
@@ -71,6 +85,37 @@ router.get('/me',async (req,res)=>{
         res.json({name: user.name});
         // console.log(user);
     }
+})
+
+
+router.post('/fillData',auth,async(req,res)=>{
+    const address=req.body.address;
+    const DOB=req.body.DOB;
+    const bloodGroup=req.body.bloodGroup;
+    const email=req.body.email;
+    const phone=req.body.phone;
+    const username=req.username;
+
+    const user=await UserModel.findOne({username});
+
+    if(!user){
+        res.json({
+            message:"Something went wrong"
+        })
+    }else{
+        await UserModel.updateOne(
+            {username:username},
+            {$set:{address:address,DOB:DOB,
+                bloodGroup:bloodGroup,
+                email:email,
+                phone:phone
+            }}
+        )
+    }
+    res.json({
+        message:"data updated "
+    })
+
 })
 
 module.exports=router;
