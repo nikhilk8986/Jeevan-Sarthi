@@ -117,4 +117,27 @@ router.post('/fillData',auth,async(req,res)=>{
 
 })
 
+router.post('/donate',auth,async(req,res)=>{
+    const donorUsername=req.body.donorUsername;
+    const volume=req.body.volume;
+    const bloodGroup=req.body.bloodGroup;
+    await UserModel.updateOne(
+        {username:donorUsername},
+        {$inc:{
+            donateCount:1
+        }}
+    )
+    await HospitalsDonors.updateOne(
+        {hospitalUsername:req.hospitalUsername},
+        {$push:{
+            donors:donorUsername
+        }}
+    )
+    await BloodManagement.updateOne(
+        {hospitalUsername:req.hospitalUsername},
+        {$inc:{
+            [bloodGroup]:volume
+        }}
+    )
+})
 module.exports=router;

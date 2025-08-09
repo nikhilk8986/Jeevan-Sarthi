@@ -25,14 +25,14 @@ const hospital=new Schema({
 })
 const bloodManagement=new Schema({
     hospitalUsername:{type:String,unique:true},
-    Aplus:Number,
-    Aminus:Number,
-    Bplus:Number,
-    Oplus:Number,
-    Ominus:Number,
-    Bminus:Number,
-    ABplus:Number,
-    ABminus:Number,
+    Aplus:{type:Number,default:0},
+    Aminus:{type:Number,default:0},
+    Bplus:{type:Number,default:0},
+    Oplus:{type:Number,default:0},
+    Ominus:{type:Number,default:0},
+    Bminus:{type:Number,default:0},
+    ABplus:{type:Number,default:0},
+    ABminus:{type:Number,default:0},
     
 })
 
