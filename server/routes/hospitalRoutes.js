@@ -2,6 +2,7 @@ const express = require("express");
 const router=express.Router();
 
 const jwt=require("jsonwebtoken")
+const bcrypt=require("bcrypt")
 const JWT_SECRET="sayan_manna";
 const {HospitalsDonors,Hospital,BloodManagement,UserModel}=require("../db/db");
 
@@ -36,8 +37,9 @@ router.post('/signup',async(req,res)=>{
     }
     else{
         try {
+            const hashedPassword = await bcrypt.hash(password, 10);
             await Hospital.create({
-                hospitalUsername,hospitalName, password
+                hospitalUsername,hospitalName, password: hashedPassword
             });
             res.json({
                 message:"YOU ARE SIGNED UP"
@@ -64,7 +66,8 @@ router.post('/signin',async(req,res)=>{
         res.json({message: "Invalid hospital Username!"});
     }
     const actualPassword=hospitalUser.password;
-    if(password!=actualPassword){
+    const isPasswordValid = await bcrypt.compare(password, actualPassword);
+    if(!isPasswordValid){
         res.sendStatus(500).json({
             message:"Incorrect Password!"
         });
