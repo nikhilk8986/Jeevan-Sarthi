@@ -28,7 +28,7 @@ router.post('/signup',async(req,res)=>{
     const password=req.body.password;
     const hospitalName = req.body.hospitalName;
     const confirmPassword=req.body.confirmPassword;
-    if(password!=confirmPassword){
+    try{if(password!=confirmPassword){
         res.sendStatus(500).json({
             message:"Incorect Password Match"
         });
@@ -48,6 +48,9 @@ router.post('/signup',async(req,res)=>{
             console.log("failed to create ID");
             res.json({message: "Failed to create ID."});
         }
+    }}
+    catch{
+        res.json({message: "Something went wrong during signup!"})
     }
 })
 
@@ -57,7 +60,7 @@ router.post('/signin',async(req,res)=>{
     // const name = req.body.name;
     // const confirmPassword=req.body.confirmPassword;
     const hospitalUser=await Hospital.findOne({hospitalUsername});
-    if(!hospitalUser){
+    try{if(!hospitalUser){
         res.json({message: "Invalid hospital Username!"});
     }
     const actualPassword=hospitalUser.password;
@@ -73,6 +76,11 @@ router.post('/signin',async(req,res)=>{
         },JWT_SECRET);
         res.json({
             token:token
+        })
+    }}
+    catch{
+        res.json({
+            message: "Something wennt wrong during signin!"
         })
     }
     
@@ -96,7 +104,7 @@ router.post('/fillData',auth,async(req,res)=>{
     const phone=req.body.phone;
     const hospitalUsername=req.hospitalUsername;
 
-    const hospitalUser=await Hospital.findOne({hospitalUsername});
+    try{const hospitalUser=await Hospital.findOne({hospitalUsername});
 
     if(!hospitalUser){
         res.json({
@@ -113,7 +121,10 @@ router.post('/fillData',auth,async(req,res)=>{
     }
     res.json({
         message:"data updated "
-    })
+    })}
+    catch{
+        res.json({message: "Something went wrong during filling data!"})
+    }
 
 })
 
@@ -121,23 +132,32 @@ router.post('/donate',auth,async(req,res)=>{
     const donorUsername=req.body.donorUsername;
     const volume=req.body.volume;
     const bloodGroup=req.body.bloodGroup;
-    await UserModel.updateOne(
+    try{await UserModel.updateOne(
         {username:donorUsername},
         {$inc:{
             donateCount:1
         }}
-    )
-    await HospitalsDonors.updateOne(
+    )}
+    catch{
+        res.json({message: "Somethig went wrong during finding user!"})
+    }
+    try{await HospitalsDonors.updateOne(
         {hospitalUsername:req.hospitalUsername},
         {$push:{
             donors:donorUsername
         }}
-    )
-    await BloodManagement.updateOne(
+    )}
+    catch{
+        res.json({message: "Something went wronfg during finding hospital"})
+    }
+    try{await BloodManagement.updateOne(
         {hospitalUsername:req.hospitalUsername},
         {$inc:{
             [bloodGroup]:volume
         }}
-    )
+    )}
+    catch{
+        res.json({message: "Something went wrong during updating blood record"})
+    }
 })
 module.exports=router;
