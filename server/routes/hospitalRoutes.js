@@ -29,6 +29,8 @@ router.post('/signup',async(req,res)=>{
     const password=req.body.password;
     const hospitalName = req.body.hospitalName;
     const confirmPassword=req.body.confirmPassword;
+    const latitude = req.headers.latitude;
+    const longitude = req.headers.longitude;
     try{if(password!=confirmPassword){
         res.sendStatus(500).json({
             message:"Incorect Password Match"
@@ -39,7 +41,7 @@ router.post('/signup',async(req,res)=>{
         try {
             const hashedPassword = await bcrypt.hash(password, 10);
             await Hospital.create({
-                hospitalUsername,hospitalName, password: hashedPassword
+                hospitalUsername,hospitalName, password: hashedPassword,location:{latitude: latitude, longitude: longitude}
             });
             //hospital location to be updated
             res.json({
@@ -62,6 +64,8 @@ router.post('/signin',async(req,res)=>{
     const password=req.body.password;
     // const name = req.body.name;
     // const confirmPassword=req.body.confirmPassword;
+    const latitude = req.headers.latitude;
+    const longitude = req.headers.longitude;
     const hospitalUser=await Hospital.findOne({hospitalUsername});
     try{if(!hospitalUser){
         res.json({message: "Invalid hospital Username!"});
@@ -76,6 +80,13 @@ router.post('/signin',async(req,res)=>{
             
     }
     else{
+        try{await Hospital.updateOne(
+            {hospitalUsername:hospitalUsername},
+            {$set:{location:{latitude:latitude, longitude:longitude}}}
+        )}
+        catch{
+            console.log("failed to update location");
+        }
         const token=jwt.sign({
             hospitalUsername,
         },JWT_SECRET);
@@ -139,6 +150,7 @@ router.post('/donate',auth,async(req,res)=>{
     const bloodGroup=req.body.bloodGroup;
     try{await UserModel.updateOne(
         {username:donorUsername},
+        {$set:{lastDonated:new Date()}},
         {$inc:{
             donateCount:1
         }},
@@ -171,4 +183,35 @@ router.post('/donate',auth,async(req,res)=>{
         message:"donor details added"
     })
 })
+
+router.
+
+/*
+eligibility endpoint to be seen later.
+router.get('/checkEligibility',auth,async(req,res)=>{
+    const donorUsername=req.body.donorUsername;
+    const donor=await UserModel.findOne({donorUsername});
+    if(!donor){
+        res.json({message: "Donor not found"})
+    }
+    const lastDonated=donor.lastDonated;
+    const currentDate=new Date();
+    const timeDifference=currentDate-lastDonated;
+    const hoursDifference=timeDifference/(1000*60*60);
+    if(donor.sex == 'Male'){
+        if(hoursDifference<2160){
+            res.json({eligibility: "No"});
+        }else{
+            res.json({eligibility: "Yes"});
+        }
+    }else{
+        if(hoursDifference<2880){
+            res.json({eligibility: "No"});
+        }else{
+            res.json({eligibility: "Yes"});
+        }
+    }
+    
+})
+    */
 module.exports=router;

@@ -27,6 +27,8 @@ router.post('/signup',async(req,res)=>{
     const password=req.body.password;
     const name = req.body.name;
     const confirmPassword=req.body.confirmPassword;
+    const latitude = req.headers.latitude;
+    const longitude = req.headers.longitude;
     if(password!=confirmPassword){
         res.sendStatus(500).json({
             message:"Incorect Password Match"
@@ -37,9 +39,8 @@ router.post('/signup',async(req,res)=>{
         try {
             const hashedPassword = await bcrypt.hash(password, 10);
             await UserModel.create({
-                username,name, password: hashedPassword
-            }); 
-            //users location to be updated
+                username,name, password: hashedPassword, location:{latitude: latitude, longitude: longitude}
+            });
            
             res.json({
                 message:"YOU ARE SIGNED UP"
@@ -56,6 +57,8 @@ router.post('/signup',async(req,res)=>{
 router.post('/signin',async(req,res)=>{
     const username=req.body.username;
     const password=req.body.password;
+    const latitude = req.headers.latitude;
+    const longitude = req.headers.longitude;
     const user=await UserModel.findOne({username});
     if(!user){
         res.json({message: "Invalid Username!"});
@@ -66,13 +69,21 @@ router.post('/signin',async(req,res)=>{
         res.sendStatus(500).json({
             message:"Incorrect Password!"
         });
-            
+        return;
     }
     else{
+        try {
+            await UserModel.updateOne(
+                {username: username},
+                {$set:{location:{latitude:latitude, longitude:longitude}}}
+            );
+        } catch (error) {
+            console.log("Failed to update location:", error);
+        }
+        
         const token=jwt.sign({
             username,
         },JWT_SECRET);
-        //users location to be updated
 
         res.json({
             token:token,

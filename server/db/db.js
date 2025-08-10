@@ -6,13 +6,14 @@ const user=new Schema({
     name:String,
     password:String,
     address: String,
-    // location:String,
     DOB:Date,
+    sex:String,
     bloodGroup:String,
     email:String,
     phone:String,
     donateCount:{type:Number,default:0},
-    location:{latitude:String, longitude:String}
+    location:{latitude:String, longitude:String},
+    lastDonated:Date
 })
 
 const hospital=new Schema({
@@ -25,6 +26,7 @@ const hospital=new Schema({
     location:{latitude:String, longitude:String}
 
 })
+
 const bloodManagement=new Schema({
     hospitalUsername:{type:String,unique:true},
     Aplus:{type:Number,default:0},
