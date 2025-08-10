@@ -41,6 +41,7 @@ router.post('/signup',async(req,res)=>{
             await Hospital.create({
                 hospitalUsername,hospitalName, password: hashedPassword
             });
+            //hospital location to be updated
             res.json({
                 message:"YOU ARE SIGNED UP"
             })
@@ -67,6 +68,7 @@ router.post('/signin',async(req,res)=>{
     }
     const actualPassword=hospitalUser.password;
     const isPasswordValid = await bcrypt.compare(password, actualPassword);
+    //hospital location to be updated
     if(!isPasswordValid){
         res.sendStatus(500).json({
             message:"Incorrect Password!"

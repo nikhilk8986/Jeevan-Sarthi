@@ -38,7 +38,9 @@ router.post('/signup',async(req,res)=>{
             const hashedPassword = await bcrypt.hash(password, 10);
             await UserModel.create({
                 username,name, password: hashedPassword
-            });
+            }); 
+            //users location to be updated
+           
             res.json({
                 message:"YOU ARE SIGNED UP"
             })
@@ -54,8 +56,6 @@ router.post('/signup',async(req,res)=>{
 router.post('/signin',async(req,res)=>{
     const username=req.body.username;
     const password=req.body.password;
-    // const name = req.body.name;
-    // const confirmPassword=req.body.confirmPassword;
     const user=await UserModel.findOne({username});
     if(!user){
         res.json({message: "Invalid Username!"});
@@ -72,8 +72,11 @@ router.post('/signin',async(req,res)=>{
         const token=jwt.sign({
             username,
         },JWT_SECRET);
+        //users location to be updated
+
         res.json({
-            token:token
+            token:token,
+            message: "you are signed in!"
         })
     }
     
@@ -84,6 +87,8 @@ router.get('/me',async (req,res)=>{
     const decodeData=jwt.verify(token,JWT_SECRET);
     const username=decodeData.username;
     const user= await UserModel.findOne({username});
+    //users location to be updated
+
     if(user){
         res.json({name: user.name});
         // console.log(user);

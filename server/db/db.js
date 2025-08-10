@@ -11,7 +11,8 @@ const user=new Schema({
     bloodGroup:String,
     email:String,
     phone:String,
-    donateCount:{type:Number,default:0}
+    donateCount:{type:Number,default:0},
+    location:{latitude:String, longitude:String}
 })
 
 const hospital=new Schema({
@@ -21,6 +22,7 @@ const hospital=new Schema({
     address:String,
     phone:String,
     email:String,
+    location:{latitude:String, longitude:String}
 
 })
 const bloodManagement=new Schema({
