@@ -114,7 +114,7 @@ router.post('/fillData',auth,async(req,res)=>{
     const email=req.body.email;
     const phone=req.body.phone;
     const username=req.username;
-
+    const sex=req.body.sex;
     const user=await UserModel.findOne({username});
 
     if(!user){
@@ -127,8 +127,10 @@ router.post('/fillData',auth,async(req,res)=>{
             {$set:{address:address,DOB:DOB,
                 bloodGroup:bloodGroup,
                 email:email,
-                phone:phone
-            }}
+                phone:phone,
+                sex:sex
+            }},
+         { upsert: true }
         )
     }
     res.json({

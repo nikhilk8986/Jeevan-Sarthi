@@ -184,8 +184,58 @@ router.post('/donate',auth,async(req,res)=>{
     })
 })
 
-router.
+router.get('/bloodLevels',auth,async(req,res)=>{
+    const hospitalUsername=req.hospitalUsername;
+    try{
+        const hospital=await BloodManagement.findOne({hospitalUsername});
+    res.json({
+        Aplus:hospital.Aplus,
+        Aminus:hospital.Aminus,
+        Bplus:hospital.Bplus,
+        Bminus:hospital.Bminus,
+        Oplus:hospital.Oplus,
+        Ominus:hospital.Ominus,
+        ABplus:hospital.ABplus,
+        ABminus:hospital.ABminus,
+    })
+    }catch(error){
+        console.log(error);
+        res.json({
+            message:"hospital not found"
+        })
+    }
+   
+    
+})
 
+router.post('/bloodUpdate',auth,async (req,res)=>{
+    const hospitalUsername=req.hospitalUsername;
+    const updateArray=req.body.updateArray;
+    try{
+        await BloodManagement.updateOne(
+            {hospitalUsername:hospitalUsername},
+            {$inc:{
+                Aplus:-updateArray[0],
+                Aminus:-updateArray[1],
+                Bplus:-updateArray[2],
+                Oplus:-updateArray[3],
+                Ominus:-updateArray[4],
+                Bminus:-updateArray[5],
+                ABplus:-updateArray[6],
+                ABminus:-updateArray[7]
+            }},
+         { upsert: true }
+        );
+        res.json({
+            message:"updated"
+        })
+    }catch(error){
+        console.log(error);
+        res.json({
+            message:"coudnot update in bloodUpdate"
+        })
+    }
+})
 /*
 eligibility endpoint to be seen later.
 router.get('/checkEligibility',auth,async(req,res)=>{
