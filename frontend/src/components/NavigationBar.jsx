@@ -1,4 +1,10 @@
+import {useNavigate} from 'react-router-dom';
+
 export default function NavigationBar() {
+    const navigate = useNavigate();
+    function handleLogin(){
+        navigate("/login");
+    }
     return (
         <div className="flex justify-between items-center py-[2%] bg-[#d3aeff] px-[2%] ">
             {/* Left side */}
@@ -6,9 +12,9 @@ export default function NavigationBar() {
             
             {/* Right side */}
             <div className="flex gap-4">
- <button className="bg-white border px-5 py-2 cursor-pointer hover:shadow-lg hover:scale-90 transition ease-in-out duration-200 hover:bg-black hover:text-white"
+ <button className="btn" onClick={handleLogin}
 >Login</button>
-                <button className="bg-white border px-5 py-2 cursor-pointer hover:shadow-lg hover:scale-90 transition ease-in-out duration-200 hover:bg-black hover:text-white"
+                <button className="btn"
 >SignUp</button>
             </div>
         </div>
