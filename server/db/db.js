@@ -42,7 +42,14 @@ const bloodManagement=new Schema({
 
 const hospitalsDonors=new Schema({
     hospitalUsername:{type:String,unique:true},
-    donors:[String]
+    donors: [
+        {
+            id: { type: String, required: true },
+            volume: { type: Number, required: true },
+            name: { type: String, required: true },
+            email: { type: String, required: true }
+        }
+    ]
 })
 
 const Hospital=mongoose.model("hospital",hospital);

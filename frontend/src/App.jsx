@@ -3,7 +3,9 @@ import HeroSection from "./components/HeroSection";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import { BrowserRouter,Routes,Route,Outlet } from "react-router-dom";
-
+import Register from "./components/Register";
+import FillData from "./components/FillData";
+import { DataTableDemo } from "./components/DonationList";
 function App() {
  
 
@@ -16,9 +18,11 @@ function App() {
               <Route path='/' element={<Layout/>}>
                 <Route index element={<HeroSection/>}/>
                 <Route path='/login' element={<Login/>}/>
+                <Route path='/register' element={<Register/>}/>
               </Route>
           </Routes>
       </BrowserRouter>
+    
     </>
   );
 }

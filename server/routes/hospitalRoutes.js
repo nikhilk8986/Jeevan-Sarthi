@@ -144,45 +144,62 @@ router.post('/fillData',auth,async(req,res)=>{
 
 })
 
-router.post('/donate',auth,async(req,res)=>{
-    const donorUsername=req.body.donorUsername;
-    const volume=req.body.volume;
-    const bloodGroup=req.body.bloodGroup;
-    try{await UserModel.updateOne(
-        {username:donorUsername},
-        {$set:{lastDonated:new Date()}},
-        {$inc:{
-            donateCount:1
-        }},
-         { upsert: true }
-    )}
-    catch{
-        res.json({message: "Somethig went wrong during finding user!"})
+router.post('/donate', auth, async (req, res) => {
+    const donorUsername = req.body.donorUsername;
+    const volume = req.body.volume;
+    const bloodGroup = req.body.bloodGroup;
+
+    try {
+        const donorUser = await UserModel.findOne({ username: donorUsername });
+        if (!donorUser) {
+            return res.status(404).json({ message: "Donor not found!" });
+        }
+
+        const { name, email } = donorUser;
+
+        await UserModel.updateOne(
+            { username: donorUsername },
+            {
+                $set: { lastDonated: new Date() },
+                $inc: { donateCount: 1 }
+            },
+            { upsert: true }
+        );
+
+        await HospitalsDonors.updateOne(
+            { hospitalUsername: req.hospitalUsername },
+            { $push: { donors: { id: donorUsername, volume, name, email } } },
+            { upsert: true }
+        );
+
+        const groupMap = {
+            "A+": "Aplus",
+            "A-": "Aminus",
+            "B+": "Bplus",
+            "B-": "Bminus",
+            "O+": "Oplus",
+            "O-": "Ominus",
+            "AB+": "ABplus",
+            "AB-": "ABminus"
+        };
+
+        if (!groupMap[bloodGroup]) {
+            return res.status(400).json({ message: "Invalid blood group" });
+        }
+
+        await BloodManagement.updateOne(
+            { hospitalUsername: req.hospitalUsername },
+            { $inc: { [groupMap[bloodGroup]]: volume } },
+            { upsert: true }
+        );
+
+        res.json({ message: "Donor details added successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error during donation" });
     }
-    try{await HospitalsDonors.updateOne(
-        {hospitalUsername:req.hospitalUsername},
-        {$push:{
-            donors:donorUsername
-        }},
-         { upsert: true }
-    )}
-    catch{
-        res.json({message: "Something went wronfg during finding hospital"})
-    }
-    try{await BloodManagement.updateOne(
-        {hospitalUsername:req.hospitalUsername},
-        {$inc:{
-            [bloodGroup]:volume
-        }},
-         { upsert: true }
-    )}
-    catch{
-        res.json({message: "Something went wrong during updating blood record"})
-    }
-    res.json({
-        message:"donor details added"
-    })
-})
+});
+
 
 router.get('/bloodLevels',auth,async(req,res)=>{
     const hospitalUsername=req.hospitalUsername;
