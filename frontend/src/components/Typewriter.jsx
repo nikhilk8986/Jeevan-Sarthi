@@ -6,7 +6,7 @@ export default function TypewriterComponent() {
       
       <Typewriter
         options={{
-          strings: ['Your blood there HOPE!', 'Join Thousand Of Active Donors.', 'You Dont have to be Doctor to SAVE Life.'],
+          strings: ['Your blood there HOPE!', 'Join Thousand Of Active Donors.', "You Don't have to be Doctor to SAVE Life."],
           autoStart: true,
           loop: true,
           delay: 75,

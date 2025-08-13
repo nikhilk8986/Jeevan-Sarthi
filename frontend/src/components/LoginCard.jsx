@@ -10,13 +10,56 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-
+import { useRef } from "react"
+import { AuthProvider } from "../context/AuthContext"
+import { useAuth } from "../context/AuthContext"
+import axios from 'axios'
 export function LoginCard() {
+  const login = useAuth();
+  const usernameRef=useRef();
+  const passwordRef=useRef();
   const navigate = useNavigate();
   function handleRegister(){
         navigate("/register");
     }
+    const [who,setWho]=useState(0);//0==user
+    function handleTextClick(){
+      setWho(!who)
+      
+    }
+    function handleLoginClick(){
+      const username=usernameRef.current.value;
+    const password=passwordRef.current.value;
+      if(who){
+        axios.post('http://localhost:3000/hospital/signin',
+          {
+            hospitalUsername:username,
+            password:password
+          }
+        ).then(
+          response=>{
+            const token=response.data.token;
+            login(token);
+          },
+          console.log("data sent")
+        )
+      }else{
+        axios.post('http://localhost:3000/user/signin',
+        {
+          username,
+          password
+        }
+      ).then(
+          response=>{
+            const token=response.data.token;
+            login(token);
+          }
+        )
+      }
+    }
+
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -33,7 +76,8 @@ export function LoginCard() {
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input
+              <Input 
+                ref={usernameRef}
                 id="email"
                 type="email"
                 placeholder="m@example.com"
@@ -50,15 +94,16 @@ export function LoginCard() {
                   Forgot your password?
                 </a>
               </div>
-              <Input id="password" type="password" required />
+              <Input ref={passwordRef} id="password" type="password" required />
             </div>
           </div>
         </form>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="bg-gray-200 border border-2 w-full">
+        <Button type="button" className="bg-gray-200 border border-2 w-full" onClick={handleLoginClick}>
           Login
         </Button>
+        <h6 className="underline cursor-pointer" onClick={handleTextClick}>login as {who?"user":"hospital"}?</h6>
       </CardFooter>
     </Card>
   )

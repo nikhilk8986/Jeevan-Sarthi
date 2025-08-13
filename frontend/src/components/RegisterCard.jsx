@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
 import {
   Card,
   CardAction,
@@ -17,6 +18,11 @@ export function RegisterCard() {
 function handleLogin(){
     navigate("/login")
 }
+const [who,setWho]=useState(0);//0==user
+    function handleTextClick(){
+      setWho(!who)
+      
+    }
   return (
     
     <Card className="w-full max-w-sm">
@@ -69,6 +75,7 @@ function handleLogin(){
         <Button type="submit" className="bg-gray-200 border border-2 w-full">
           Sign Up
         </Button>
+        <h6 className="underline cursor-pointer" onClick={handleTextClick}>login as {who?"user":"hospital"}?</h6>
       </CardFooter>
     </Card>
   )
