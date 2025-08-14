@@ -11,6 +11,7 @@ import {BloodInventory} from './components/BloodInventory'
 import FillDataHospital from "./components/FillDataHospital";
 import {UserFeed} from "./components/UserFeed";
 import {UserDashboard} from "./components/UserDashboard"
+import BloodDonate from "./components/BloodDonate"
 function App() {
  
 
@@ -21,7 +22,7 @@ function App() {
       <BrowserRouter>
           <Routes>
               <Route path='/' element={<Layout/>}>
-                <Route index element={<FillDataHospital/>}/>
+                <Route index element={<BloodDonate/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/register' element={<Register/>}/>
                 <Route path='/filldata' element={<FillData/>}/>

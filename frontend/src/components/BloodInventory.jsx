@@ -1,15 +1,45 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 export function BloodInventory(){
+    const { token } = useAuth();
+    const [feedData, setFeedData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    
+    useEffect(() => {
+        const bloodlevels = async () => {
+            try{
+                setLoading(true);
+                const response = await axios.get("http://localhost:3000/hospital/bloodLevels", {
+          headers: { token },
+        });
+        console.log("fetched data from backend", response.data);
+        setFeedData(response.data);
+        setError("");
+            }catch(err){
+                console.error("Error fetching feed:", err);
+                setError("Failed to load feed data");
+            }finally {
+            setTimeout(() => setLoading(false), 2000);
+      }
+        };
+        if (token){
+            bloodlevels();
+
+        
+        }
+    },[token]
+
+    );
     const [bloodTypes, setBloodTypes] = useState([
-        { type: "A+", level: 85, color: "text-red-600", bgColor: "bg-red-100" },
-        { type: "A-", level: 45, color: "text-red-600", bgColor: "bg-red-50" },
-        { type: "B+", level: 72, color: "text-blue-600", bgColor: "bg-blue-100" },
-        { type: "B-", level: 38, color: "text-blue-600", bgColor: "bg-blue-50" },
-        { type: "AB+", level: 28, color: "text-purple-600", bgColor: "bg-purple-100" },
-        { type: "AB-", level: 15, color: "text-purple-600", bgColor: "bg-purple-50" },
-        { type: "O+", level: 95, color: "text-green-600", bgColor: "bg-green-100" },
-        { type: "O-", level: 62, color: "text-green-600", bgColor: "bg-green-50" }
+        { type: "A+", level: feedData.Aplus, color: "text-red-600", bgColor: "bg-red-100" },
+        { type: "A-", level: feedData.Aminus, color: "text-red-600", bgColor: "bg-red-50" },
+        { type: "B+", level: feedData.Bplus, color: "text-blue-600", bgColor: "bg-blue-100" },
+        { type: "B-", level: feedData.Bminus, color: "text-blue-600", bgColor: "bg-blue-50" },
+        { type: "AB+", level: feedData.ABplus, color: "text-purple-600", bgColor: "bg-purple-100" },
+        { type: "AB-", level: feedData.ABminus, color: "text-purple-600", bgColor: "bg-purple-50" },
+        { type: "O+", level: feedData.Oplus, color: "text-green-600", bgColor: "bg-green-100" },
+        { type: "O-", level: feedData.Ominus, color: "text-green-600", bgColor: "bg-green-50" }
     ]);
 
     const [expandedType, setExpandedType] = useState(null);
