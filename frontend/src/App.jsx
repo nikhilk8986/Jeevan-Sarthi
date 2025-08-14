@@ -10,6 +10,7 @@ import {ResizableHandleDemo} from './components/HospitalDashboard'
 import {BloodInventory} from './components/BloodInventory'
 import FillDataHospital from "./components/FillDataHospital";
 import {UserFeed} from "./components/UserFeed";
+import {UserDashboard} from "./components/UserDashboard"
 function App() {
  
 
@@ -20,10 +21,16 @@ function App() {
       <BrowserRouter>
           <Routes>
               <Route path='/' element={<Layout/>}>
-                <Route index element={<UserFeed/>}/>
+                <Route index element={<HeroSection/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/register' element={<Register/>}/>
                 <Route path='/filldata' element={<FillData/>}/>
+                <Route path='/userdashboard' element={<UserDashboard/>}/>
+                <Route path='/userfeed' element={<UserFeed/>}/>
+                <Route path='/bloodinventory' element={<BloodInventory/>}/>
+                <Route path='/filldatahospital' element={<FillDataHospital/>}/>
+                <Route path='/datatable' element={<DataTableDemo/>}/>
+                <Route path='/hospitaldashboard' element={<ResizableHandleDemo/>}/>
               </Route>
           </Routes>
       </BrowserRouter>

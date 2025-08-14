@@ -18,6 +18,7 @@ app.get('/test', (req, res)=>{
 
 app.use('/user',userRoutes);
 app.use('/hospital',hospitalRoutes)
+console.log("API KEY FROM ENV:", process.env.SENDGRID_API_KEY);
 mongoose.connect(mongouri).then(()=>{
     console.log('Mongo db coneected');
     app.listen(3000);

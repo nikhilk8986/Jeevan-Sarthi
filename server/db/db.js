@@ -16,6 +16,20 @@ const user=new Schema({
     lastDonated:Date
 })
 
+const userAppointments = new Schema({
+  username: { type: String, unique: true, required: true },
+  appointments: [
+    {
+      hospitalName: { type: String, required: true },
+      bloodGroup: { type: String, required: true },
+      location: {
+        latitude: { type: String, required: true },
+        longitude: { type: String, required: true }
+      }
+    }
+  ]
+});
+
 const hospital=new Schema({
     hospitalUsername:{type:String,unique:true},
     password:String,
@@ -64,7 +78,8 @@ const BloodManagement=mongoose.model("bloodManagement",bloodManagement);
 const HospitalsDonors=mongoose.model("hospitalsDonors",hospitalsDonors);
 const UserModel=mongoose.model("user",user);
 const RequestsModel = mongoose.model("requests", requests);
+const UserAppointments = mongoose.model("userAppointments", userAppointments)
 
 module.exports={
-    UserModel,HospitalsDonors,Hospital,BloodManagement, RequestsModel
+    UserModel,HospitalsDonors,Hospital,BloodManagement, RequestsModel, UserAppointments
 }

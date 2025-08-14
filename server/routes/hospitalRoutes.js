@@ -7,24 +7,65 @@ const JWT_SECRET="sayan_manna";
 const {HospitalsDonors,Hospital,BloodManagement,UserModel, RequestsModel}=require("../db/db");
 
 router.use(express.json());
+require("dotenv").config();
+const sgMail = require("@sendgrid/mail");
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-function auth(req,res,next){
-    const token=req.headers.token;
-    const decodeData=jwt.verify(token,JWT_SECRET);
+async function sendTestEmail(recipients) {
+  for (const email of recipients) {
+    const msg = {
+      to: email,
+      from: "sayan2003.dev@gmail.com",
+      subject: "Test Email from Jeevan-Sarthi",
+      text: "Plain text version",
+      html: "<strong>HTML version</strong>"
+    };
 
-    if(decodeData.hospitalUsername){
-        req.hospitalUsername=decodeData.hospitalUsername;
-        req.latitude=decodeData.latitude;
-        req.longitude=decodeData.longitude;
-        next();
+    try {
+      await sgMail.send(msg);
+      console.log(`✅ Sent to: ${email}`);
+    } catch (err) {
+      console.error(`❌ Error sending to ${email}:`, err.response?.body || err);
     }
-    else {
-        res.status(500).json({
-            message:"you are not logged in"
-        })
+  }
+}
+
+
+async function auth(req, res, next) {
+    try {
+        const token = req.headers.token;
+        if (!token) {
+            return res.status(401).json({ message: "Token missing" });
+        }
+
+        const decodeData = jwt.verify(token, JWT_SECRET);
+
+        if (!decodeData.hospitalUsername) {
+            return res.status(401).json({ message: "Invalid token" });
+        }
+
+        req.hospitalUsername = decodeData.hospitalUsername;
+        const hospital = await Hospital.findOne(
+            { hospitalUsername: decodeData.hospitalUsername },
+            { "location.latitude": 1, "location.longitude": 1, _id: 0 }
+        );
+
+        if (hospital?.location) {
+            req.latitude = parseFloat(hospital.location.latitude);
+            req.longitude = parseFloat(hospital.location.longitude);
+        } else {
+            req.latitude = null;
+            req.longitude = null;
+        }
+
+        next();
+    } catch (error) {
+        console.error("Auth error:", error);
+        res.status(401).json({ message: "Authentication failed" });
     }
 }
+
 
 router.post('/signup',async(req,res)=>{
     const hospitalUsername=req.body.hospitalUsername;
@@ -145,30 +186,68 @@ router.post('/fillData',auth,async(req,res)=>{
 
 })
 
-router.post('/request', auth, async (req, res) => {
-    try {
-        await RequestsModel.updateOne(
-            { hospitalUsername: req.hospitalUsername },
-            {
-                $push: { bloodGroup: req.body.bloodGroup }, // or $addToSet for unique
-                $set: {
-                    location: { longitude: req.longitude, latitude: req.latitude }
-                }
-            },
-            { upsert: true }
+const haversineDistance = (coords1, coords2) => {
+  const toRad = (value) => (value * Math.PI) / 180;
+
+  const R = 6371; // Earth radius in km
+  const dLat = toRad(coords2.latitude - coords1.latitude);
+  const dLon = toRad(coords2.longitude - coords1.longitude);
+
+  const lat1 = toRad(coords1.latitude);
+  const lat2 = toRad(coords2.latitude);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // Distance in km
+};
+router.post("/request", auth, async (req, res) => {
+  try {
+    await RequestsModel.updateOne(
+      { hospitalUsername: req.hospitalUsername },
+      {
+        $push: { bloodGroup: req.body.bloodGroup },
+        $set: {
+          location: {
+            longitude: req.longitude, 
+            latitude: req.latitude,
+          },
+        },
+      },
+      { upsert: true }
+    );
+
+    const allUsers = await UserModel.find({}, { username: 1, location: 1, _id: 0 });
+    const nearbyUsernames = allUsers
+      .filter((user) => {
+        if (!user.location?.latitude || !user.location?.longitude) return false;
+
+        const distance = haversineDistance(
+          { latitude: req.latitude, longitude: req.longitude },
+          { latitude: parseFloat(user.location.latitude), longitude: parseFloat(user.location.longitude) }
         );
 
-        res.status(200).json({
-            message: "Request added"
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: "Something went wrong in /request"
-        });
-    }
-});
+        return distance <= 10; // km
+      })
+      .map((user) => user.username); // now username = email
 
+    if (nearbyUsernames.length > 0) {
+      await sendTestEmail(nearbyUsernames); // directly send to usernames-as-emails
+    }
+
+    res.status(200).json({
+      message: "Request added and emails sent",
+      nearbyUsernames,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Something went wrong in /request",
+    });
+  }
+});
 
 router.post('/donate', auth, async (req, res) => {
     const donorUsername = req.body.donorUsername;

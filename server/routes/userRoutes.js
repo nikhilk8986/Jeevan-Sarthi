@@ -4,7 +4,7 @@ const router=express.Router();
 const jwt=require("jsonwebtoken")
 const bcrypt=require("bcrypt")
 const JWT_SECRET="sayan_manna";
-const { HospitalsDonors,Hospital,BloodManagement,UserModel, RequestsModel}=require("../db/db");
+const { HospitalsDonors,Hospital,BloodManagement,UserModel, UserAppointments, RequestsModel}=require("../db/db");
 router.use(express.json());
 
 function auth(req,res,next){
@@ -141,6 +141,57 @@ router.post('/fillData',auth,async(req,res)=>{
     })
 
 })
+
+router.post("/bookAppointments", auth, async (req, res) => {
+  try {
+    const { hospitalName, bloodGroup, location } = req.body;
+    const username = req.username;
+    if (!username || !hospitalName || !bloodGroup || !location?.latitude || !location?.longitude) {
+      return res.status(400).json({
+        error: "username, hospitalName, bloodGroup, and location (latitude & longitude) are required"
+      });
+    }
+    const result = await UserAppointments.updateOne(
+      { username },
+      {
+        $push: {
+          appointments: {
+            hospitalName,
+            bloodGroup,
+            location
+          }
+        }
+      },
+      {upsert: true }
+    );
+
+    res.status(200).json({
+      message: "Appointment added successfully",
+      data: result
+    });
+  } catch (err) {
+    console.error("Error saving appointment:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get('/myAppointments', auth, async (req, res) => {
+    const username = req.username;
+    try {
+        const user = await UserAppointments.findOne({ username });
+
+        if (!user) {
+            return res.status(200).json({ feed: [] });
+        }
+
+        res.status(200).json({ feed: user.appointments });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message || "Something went wrong" });
+    }
+});
+
+
 router.get('/feed', async (req, res) => {
     try {
         const feed = await RequestsModel.aggregate([
