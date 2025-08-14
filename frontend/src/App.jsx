@@ -9,6 +9,7 @@ import { DataTableDemo } from "./components/DonationList";
 import {ResizableHandleDemo} from './components/HospitalDashboard'
 import {BloodInventory} from './components/BloodInventory'
 import FillDataHospital from "./components/FillDataHospital";
+import {UserFeed} from "./components/UserFeed";
 function App() {
  
 
@@ -19,7 +20,7 @@ function App() {
       <BrowserRouter>
           <Routes>
               <Route path='/' element={<Layout/>}>
-                <Route index element={<ResizableHandleDemo/>}/>
+                <Route index element={<UserFeed/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/register' element={<Register/>}/>
                 <Route path='/filldata' element={<FillData/>}/>
