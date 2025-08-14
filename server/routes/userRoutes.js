@@ -4,7 +4,7 @@ const router=express.Router();
 const jwt=require("jsonwebtoken")
 const bcrypt=require("bcrypt")
 const JWT_SECRET="sayan_manna";
-const { UserModel}=require("../db/db");
+const { HospitalsDonors,Hospital,BloodManagement,UserModel, RequestsModel}=require("../db/db");
 router.use(express.json());
 
 function auth(req,res,next){
@@ -141,5 +141,36 @@ router.post('/fillData',auth,async(req,res)=>{
     })
 
 })
+router.get('/feed', async (req, res) => {
+    try {
+        const feed = await RequestsModel.aggregate([
+            {
+                $lookup: {
+                    from: "hospitals",
+                    localField: "hospitalUsername",
+                    foreignField: "hospitalUsername",
+                    as: "hospitalDetails"
+                }
+            },
+            { $unwind: "$hospitalDetails" },
+            { $unwind: "$bloodGroup" }, // split each blood group into its own doc
+            {
+                $project: {
+                    _id: 0,
+                    hospitalName: "$hospitalDetails.hospitalName",
+                    hospitalUsername: 1,
+                    bloodGroup: 1,
+                    location: 1
+                }
+            }
+        ]);
+
+        res.status(200).json(feed);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Something went wrong while fetching feed" });
+    }
+});
+
 
 module.exports=router;
