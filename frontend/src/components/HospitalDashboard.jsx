@@ -7,7 +7,10 @@ import { useState } from "react"
 import { BloodInventory } from "./BloodInventory"
 import { DataTableDemo } from "./DonationList"
 import {CarouselDemo} from './DashboardSlider'
-export function ResizableHandleDemo() {
+
+
+
+export function HospitalDashboard() {
   const [patientGoal, setPatientGoal] = useState(1247);
   const [bedGoal, setBedGoal] = useState(89);
   const [staffGoal, setStaffGoal] = useState(156);

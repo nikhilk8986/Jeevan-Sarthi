@@ -3,8 +3,45 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRef } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { HospitalDashboard } from "./HospitalDashboard";
+
 
 export default function FillDataHospital() {
+  const navigate=useNavigate();
+  const usernameRef=useRef();
+  const nameRef=useRef(); 
+  const addressRef=useRef();
+  const phoneRef=useRef();
+  const emailRef=useRef();
+
+  function submitHandler(){
+    // const username=usernameRef.current.value;
+    // const name=nameRef.current.value;
+    const phone=phoneRef.current.value;
+    const email=emailRef.current.value;
+    const address=addressRef.current.value;
+    const token=localStorage.getItem('token');
+    axios.post('http://localhost:3000/hospital/fillData',
+      {email:email,
+        address:address,
+        phone:phone
+      },
+      {
+        headers:{
+          token:token
+        }
+      }
+    ).then(
+      res=>console.log(res.data.message),
+      navigate('/hospitaldashboard')
+  ).catch(
+      err=>console.log(err)
+    )
+  }
+
   return (
     <div className="max-w-2xl mx-auto px-8 py-6">
       <Card>
@@ -17,43 +54,28 @@ export default function FillDataHospital() {
           <form className="space-y-5">
             <div className="space-y-2">
               <label className="text-sm font-medium">Username</label>
-              <Input type="text" placeholder="Type here" />
+              <Input ref={usernameRef} type="text" placeholder="Type here" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Name</label>
-              <Input type="text" placeholder="Type here" />
+              <Input ref={nameRef} type="text" placeholder="Type here" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Address</label>
-              <Textarea placeholder="Enter your address" />
+              <Textarea ref={addressRef} placeholder="Enter your address" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Phone</label>
-              <Input type="text" placeholder="Type here" />
+              <Input ref={phoneRef} type="text" placeholder="Type here" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Email</label>
-              <Input type="email" placeholder="Type here" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Date of Birth</label>
-              <Input type="date" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Sex</label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your sex" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input ref={emailRef} type="email" placeholder="Type here" />
             </div>
             <div className="flex justify-end">
-              <Button
-                type="submit"
+              <Button 
+                onClick={submitHandler}
+                type="button"
                 className="bg-green-500 hover:bg-green-600 text-white px-6"
               >
                 Save Details

@@ -45,7 +45,7 @@ const [who,setWho]=useState(0);//0==user
         ).then(response => {
           console.log("Response:", response.data);
           if(response.status === 200){
-            navigate('/');
+            navigate('/login');
           }
       }).catch(error => {
         console.error("Error:", error.response?.data || error.message);
@@ -60,7 +60,7 @@ const [who,setWho]=useState(0);//0==user
 .then(response => {
     console.log("Response:", response.data);
     if(response.status === 200){
-      navigate('/');
+      navigate('/login');
     }
 })
 .catch(error => {
@@ -84,7 +84,7 @@ const [who,setWho]=useState(0);//0==user
         <form>
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Username</Label>
               <Input
                 id="username"
                 type="email"

@@ -72,7 +72,7 @@ export function LoginCard() {
           const token = response.data.token;
           login(token);
           if(response.status === 200){
-            setTimeout(() => navigate('/'), 100);
+            setTimeout(() => navigate('/hospitaldashboard'), 100);
           }
       }).catch(error => {
         console.error("Error:", error.response?.data || error.message);

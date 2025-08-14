@@ -6,7 +6,7 @@ import { BrowserRouter,Routes,Route,Outlet } from "react-router-dom";
 import Register from "./components/Register";
 import FillData from "./components/FillData";
 import { DataTableDemo } from "./components/DonationList";
-import {ResizableHandleDemo} from './components/HospitalDashboard'
+import {HospitalDashboard} from './components/HospitalDashboard'
 import {BloodInventory} from './components/BloodInventory'
 import FillDataHospital from "./components/FillDataHospital";
 import {UserFeed} from "./components/UserFeed";
@@ -21,7 +21,7 @@ function App() {
       <BrowserRouter>
           <Routes>
               <Route path='/' element={<Layout/>}>
-                <Route index element={<HeroSection/>}/>
+                <Route index element={<FillDataHospital/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/register' element={<Register/>}/>
                 <Route path='/filldata' element={<FillData/>}/>
@@ -30,7 +30,7 @@ function App() {
                 <Route path='/bloodinventory' element={<BloodInventory/>}/>
                 <Route path='/filldatahospital' element={<FillDataHospital/>}/>
                 <Route path='/datatable' element={<DataTableDemo/>}/>
-                <Route path='/hospitaldashboard' element={<ResizableHandleDemo/>}/>
+                <Route path='/hospitaldashboard' element={<HospitalDashboard/>}/>
               </Route>
           </Routes>
       </BrowserRouter>
