@@ -4,7 +4,7 @@ const router=express.Router();
 const jwt=require("jsonwebtoken")
 const bcrypt=require("bcrypt")
 const JWT_SECRET="sayan_manna";
-const {HospitalsDonors,Hospital,BloodManagement,UserModel}=require("../db/db");
+const {HospitalsDonors,Hospital,BloodManagement,UserModel, RequestsModel}=require("../db/db");
 
 router.use(express.json());
 
@@ -145,9 +145,30 @@ router.post('/fillData',auth,async(req,res)=>{
 
 })
 
-router.post('/request',auth, async (req, res)=>{
+router.post('/request', auth, async (req, res) => {
+    try {
+        await RequestsModel.updateOne(
+            { hospitalUsername: req.hospitalUsername },
+            {
+                $push: { bloodGroup: req.body.bloodGroup }, // or $addToSet for unique
+                $set: {
+                    location: { longitude: req.longitude, latitude: req.latitude }
+                }
+            },
+            { upsert: true }
+        );
 
-})
+        res.status(200).json({
+            message: "Request added"
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Something went wrong in /request"
+        });
+    }
+});
+
 
 router.post('/donate', auth, async (req, res) => {
     const donorUsername = req.body.donorUsername;

@@ -53,8 +53,8 @@ const hospitalsDonors=new Schema({
 })
 
 const requests=new Schema({
-    hospitalUsername:{type:String,unique:true},
-    bloodGroup:String,
+    hospitalUsername:{type:String, unique:true},
+    bloodGroup:[String],
     location:{latitude:String, longitude:String}
 
 })

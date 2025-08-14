@@ -48,7 +48,7 @@ router.post('/signup',async(req,res)=>{
         }
         catch{
             
-            console.log("failed to create ID");
+            console.log("failed to create ID 2");
             res.status(500).json({message: "Failed to create ID."});
         }
     }
@@ -106,6 +106,9 @@ router.get('/me',async (req,res)=>{
     }
 })
 
+router.get('/getrequest',auth,async(req,res)=>{
+    
+})
 
 router.post('/fillData',auth,async(req,res)=>{
     const address=req.body.address;
