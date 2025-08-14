@@ -16,7 +16,7 @@ function auth(req,res,next){
         next();
     }
     else {
-        res.json({
+        res.status(500).json({
             message:"you are not logged in"
         })
     }
@@ -30,7 +30,7 @@ router.post('/signup',async(req,res)=>{
     const latitude = req.headers.latitude;
     const longitude = req.headers.longitude;
     if(password!=confirmPassword){
-        res.sendStatus(500).json({
+        res.status(500).json({
             message:"Incorect Password Match"
         });
             
@@ -42,14 +42,14 @@ router.post('/signup',async(req,res)=>{
                 username,name, password: hashedPassword, location:{latitude: latitude, longitude: longitude}
             });
            
-            res.json({
+            res.status(200).json({
                 message:"YOU ARE SIGNED UP"
             })
         }
         catch{
             
             console.log("failed to create ID");
-            res.json({message: "Failed to create ID."});
+            res.status(500).json({message: "Failed to create ID."});
         }
     }
 })
@@ -61,12 +61,12 @@ router.post('/signin',async(req,res)=>{
     const longitude = req.headers.longitude;
     const user=await UserModel.findOne({username});
     if(!user){
-        res.json({message: "Invalid Username!"});
+        res.status(500).json({message: "Invalid Username!"});
     }
     const actualPassword=user.password;
     const isPasswordValid = await bcrypt.compare(password, actualPassword);
     if(!isPasswordValid){
-        res.sendStatus(500).json({
+        res.status(500).json({
             message:"Incorrect Password!"
         });
         return;
@@ -85,7 +85,7 @@ router.post('/signin',async(req,res)=>{
             username,
         },JWT_SECRET);
 
-        res.json({
+        res.status(200).json({
             token:token,
             message: "you are signed in!"
         })
@@ -118,7 +118,7 @@ router.post('/fillData',auth,async(req,res)=>{
     const user=await UserModel.findOne({username});
 
     if(!user){
-        res.json({
+        res.status(500).json({
             message:"Something went wrong"
         })
     }else{
@@ -133,7 +133,7 @@ router.post('/fillData',auth,async(req,res)=>{
          { upsert: true }
         )
     }
-    res.json({
+    res.status(200).json({
         message:"data updated "
     })
 

@@ -18,7 +18,7 @@ function auth(req,res,next){
         next();
     }
     else {
-        res.json({
+        res.status(500).json({
             message:"you are not logged in"
         })
     }
@@ -32,7 +32,7 @@ router.post('/signup',async(req,res)=>{
     const latitude = req.headers.latitude;
     const longitude = req.headers.longitude;
     try{if(password!=confirmPassword){
-        res.sendStatus(500).json({
+        res.status(500).json({
             message:"Incorect Password Match"
         });
             
@@ -44,18 +44,18 @@ router.post('/signup',async(req,res)=>{
                 hospitalUsername,hospitalName, password: hashedPassword,location:{latitude: latitude, longitude: longitude}
             });
             //hospital location to be updated
-            res.json({
+            res.status(200).json({
                 message:"YOU ARE SIGNED UP"
             })
         }
         catch{
             
             console.log("failed to create ID");
-            res.json({message: "Failed to create ID."});
+            res.status(500).json({message: "Failed to create ID."});
         }
     }}
     catch{
-        res.json({message: "Something went wrong during signup!"})
+        res.status(500).json({message: "Something went wrong during signup!"})
     }
 })
 
@@ -68,13 +68,13 @@ router.post('/signin',async(req,res)=>{
     const longitude = req.headers.longitude;
     const hospitalUser=await Hospital.findOne({hospitalUsername});
     try{if(!hospitalUser){
-        res.json({message: "Invalid hospital Username!"});
+        res.status(500).json({message: "Invalid hospital Username!"});
     }
     const actualPassword=hospitalUser.password;
     const isPasswordValid = await bcrypt.compare(password, actualPassword);
     //hospital location to be updated
     if(!isPasswordValid){
-        res.sendStatus(500).json({
+        res.status(500).status(500).json({
             message:"Incorrect Password!"
         });
             
@@ -90,12 +90,12 @@ router.post('/signin',async(req,res)=>{
         const token=jwt.sign({
             hospitalUsername,
         },JWT_SECRET);
-        res.json({
+        res.status(200).json({
             token:token
         })
     }}
     catch{
-        res.json({
+        res.status(500).json({
             message: "Something wennt wrong during signin!"
         })
     }
@@ -108,7 +108,7 @@ router.get('/me',async (req,res)=>{
     const hospitalUsername=decodeData.hospitalUsername;
     const hospitalUser= await Hospital.findOne({hospitalUsername});
     if(hospitalUser){
-        res.json({hospitalName: hospitalUser.hospitalName});
+        res.status(200).json({hospitalName: hospitalUser.hospitalName});
         // console.log(user);
     }
 })
@@ -123,7 +123,7 @@ router.post('/fillData',auth,async(req,res)=>{
     try{const hospitalUser=await Hospital.findOne({hospitalUsername});
 
     if(!hospitalUser){
-        res.json({
+        res.status(500).json({
             message:"Something went wrong"
         })
     }else{
@@ -135,11 +135,11 @@ router.post('/fillData',auth,async(req,res)=>{
             }}
         )
     }
-    res.json({
+    res.status(200).json({
         message:"data updated "
     })}
     catch{
-        res.json({message: "Something went wrong during filling data!"})
+        res.status(500).json({message: "Something went wrong during filling data!"})
     }
 
 })
@@ -193,7 +193,7 @@ router.post('/donate', auth, async (req, res) => {
             { upsert: true }
         );
 
-        res.json({ message: "Donor details added successfully" });
+        res.status(200).json({ message: "Donor details added successfully" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error during donation" });
@@ -205,7 +205,7 @@ router.get('/bloodLevels',auth,async(req,res)=>{
     const hospitalUsername=req.hospitalUsername;
     try{
         const hospital=await BloodManagement.findOne({hospitalUsername});
-    res.json({
+    res.status(200).json({
         Aplus:hospital.Aplus,
         Aminus:hospital.Aminus,
         Bplus:hospital.Bplus,
@@ -217,7 +217,7 @@ router.get('/bloodLevels',auth,async(req,res)=>{
     })
     }catch(error){
         console.log(error);
-        res.json({
+        res.status(500).json({
             message:"hospital not found"
         })
     }
@@ -243,12 +243,12 @@ router.post('/bloodUpdate',auth,async (req,res)=>{
             }},
          { upsert: true }
         );
-        res.json({
+        res.status(200).json({
             message:"updated"
         })
     }catch(error){
         console.log(error);
-        res.json({
+        res.status(200).json({
             message:"coudnot update in bloodUpdate"
         })
     }

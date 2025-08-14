@@ -13,11 +13,10 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useRef } from "react"
-import { AuthProvider } from "../context/AuthContext"
 import { useAuth } from "../context/AuthContext"
 import axios from 'axios'
 export function LoginCard() {
-  const login = useAuth();
+  const { login } = useAuth();
   const usernameRef=useRef();
   const passwordRef=useRef();
   const navigate = useNavigate();
@@ -38,25 +37,32 @@ export function LoginCard() {
             hospitalUsername:username,
             password:password
           }
-        ).then(
-          response=>{
-            const token=response.data.token;
-            login(token);
-          },
-          console.log("data sent")
-        )
-      }else{
-        axios.post('http://localhost:3000/user/signin',
-        {
-          username,
-          password
-        }
-      ).then(
-          response=>{
-            const token=response.data.token;
-            login(token);
+        ).then(response => {
+          console.log("Response:", response.data);
+          const token = response.data.token;
+          login(token);
+          if(response.status === 200){
+            navigate('/');
           }
-        )
+      }).catch(error => {
+        console.error("Error:", error.response?.data || error.message);
+    });
+      }else{
+        axios.post("http://localhost:3000/user/signin", {
+    username: username,
+    password: password
+})
+.then(response => {
+    console.log("Response:", response.data);
+    const token = response.data.token;
+    login(token);
+    if(response.status === 200){
+      navigate('/');
+    }
+})
+.catch(error => {
+    console.error("Error:", error.response?.data || error.message);
+});
       }
     }
 
