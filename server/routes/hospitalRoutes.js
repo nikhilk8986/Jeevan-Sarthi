@@ -15,6 +15,8 @@ function auth(req,res,next){
 
     if(decodeData.hospitalUsername){
         req.hospitalUsername=decodeData.hospitalUsername;
+        req.latitude=decodeData.latitude;
+        req.longitude=decodeData.longitude;
         next();
     }
     else {
@@ -72,7 +74,6 @@ router.post('/signin',async(req,res)=>{
     }
     const actualPassword=hospitalUser.password;
     const isPasswordValid = await bcrypt.compare(password, actualPassword);
-    //hospital location to be updated
     if(!isPasswordValid){
         res.status(500).status(500).json({
             message:"Incorrect Password!"
@@ -141,6 +142,10 @@ router.post('/fillData',auth,async(req,res)=>{
     catch{
         res.status(500).json({message: "Something went wrong during filling data!"})
     }
+
+})
+
+router.post('/request',auth, async (req, res)=>{
 
 })
 

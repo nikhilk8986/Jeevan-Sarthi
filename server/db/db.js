@@ -52,11 +52,19 @@ const hospitalsDonors=new Schema({
     ]
 })
 
+const requests=new Schema({
+    hospitalUsername:{type:String,unique:true},
+    bloodGroup:String,
+    location:{latitude:String, longitude:String}
+
+})
+
 const Hospital=mongoose.model("hospital",hospital);
 const BloodManagement=mongoose.model("bloodManagement",bloodManagement);
 const HospitalsDonors=mongoose.model("hospitalsDonors",hospitalsDonors);
 const UserModel=mongoose.model("user",user);
+const RequestsModel = mongoose.model("requests", requests);
 
 module.exports={
-    UserModel,HospitalsDonors,Hospital,BloodManagement
+    UserModel,HospitalsDonors,Hospital,BloodManagement, RequestsModel
 }

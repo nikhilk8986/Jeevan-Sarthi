@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useRef } from "react"
 import { useAuth } from "../context/AuthContext"
@@ -20,6 +20,30 @@ export function LoginCard() {
   const usernameRef=useRef();
   const passwordRef=useRef();
   const navigate = useNavigate();
+  const [location, setLocation] = useState({ latitude: null, longitude: null });
+  const [locationError, setLocationError] = useState("");
+
+  // Get user location on component mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            latitude: position.coords.latitude.toString(),
+            longitude: position.coords.longitude.toString()
+          });
+          setLocationError("");
+        },
+        (error) => {
+          console.error("Location error:", error);
+          setLocationError("Location access denied. Some features may be limited.");
+        }
+      );
+    } else {
+      setLocationError("Geolocation not supported by this browser.");
+    }
+  }, []);
+
   function handleRegister(){
         navigate("/register");
     }
@@ -36,13 +60,19 @@ export function LoginCard() {
           {
             hospitalUsername:username,
             password:password
+          },
+          {
+            headers: {
+              latitude: location.latitude || "",
+              longitude: location.longitude || ""
+            }
           }
         ).then(response => {
           console.log("Response:", response.data);
           const token = response.data.token;
           login(token);
           if(response.status === 200){
-            navigate('/');
+            setTimeout(() => navigate('/'), 100);
           }
       }).catch(error => {
         console.error("Error:", error.response?.data || error.message);
@@ -51,13 +81,20 @@ export function LoginCard() {
         axios.post("http://localhost:3000/user/signin", {
     username: username,
     password: password
-})
+},
+{
+  headers: {
+    latitude: location.latitude || "",
+    longitude: location.longitude || ""
+  }
+}
+)
 .then(response => {
     console.log("Response:", response.data);
     const token = response.data.token;
     login(token);
     if(response.status === 200){
-      navigate('/');
+      setTimeout(() => navigate('/'), 100);
     }
 })
 .catch(error => {
@@ -101,6 +138,26 @@ export function LoginCard() {
                 </a>
               </div>
               <Input ref={passwordRef} id="password" type="password" required />
+            </div>
+            
+            {/* Location Status */}
+            <div className="text-sm">
+              {location.latitude && location.longitude ? (
+                <div className="text-green-600 flex items-center gap-2">
+                  <span>📍</span>
+                  <span>Location captured successfully</span>
+                </div>
+              ) : locationError ? (
+                <div className="text-orange-600 flex items-center gap-2">
+                  <span>⚠️</span>
+                  <span>{locationError}</span>
+                </div>
+              ) : (
+                <div className="text-blue-600 flex items-center gap-2">
+                  <span>🔄</span>
+                  <span>Getting your location...</span>
+                </div>
+              )}
             </div>
           </div>
         </form>
