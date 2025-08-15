@@ -24,7 +24,9 @@ app.get('/test', (req, res)=>{
 
 app.use('/user',userRoutes);
 app.use('/hospital',hospitalRoutes);
-
+app.get('/test', (req, res) =>{
+    res.json({message: "test endpoint"})
+})
 mongoose.connect(MONGO_URI).then(()=>{
     console.log('MongoDB connected successfully');
     app.listen(PORT, () => {
