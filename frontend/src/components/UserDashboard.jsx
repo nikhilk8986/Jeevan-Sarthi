@@ -1,39 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext"; // so we can get token
 
-export function UserDashboard({ error, feedData }) {
-  // Sample Data (matches DB structure exactly)
-  const sampleFeedData = [
-    {
-      hospitalName: "City General Hospital",
-      bloodGroup: "O+",
-      location: { latitude: "19.076", longitude: "72.8777" },
-    },
-    {
-      hospitalName: "Green Valley Medical Center",
-      bloodGroup: "A-",
-      location: { latitude: "28.7041", longitude: "77.1025" },
-    },
-    {
-      hospitalName: "Sunrise Healthcare",
-      bloodGroup: "B+",
-      location: { latitude: "13.0827", longitude: "80.2707" },
-    },
-    {
-      hospitalName: "Hope & Life Hospital",
-      bloodGroup: "AB-",
-      location: { latitude: "22.5726", longitude: "88.3639" },
-    },
-  ];
+export function UserDashboard() {
+  const { token } = useAuth();
+  const [localFeedData, setLocalFeedData] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Keep feed in state so we can remove items dynamically
-  const [localFeedData, setLocalFeedData] = useState(feedData || sampleFeedData);
+  // Fetch appointments on load
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/user/myAppointments", {
+          headers: { token },
+        });
+        setLocalFeedData(res.data.feed || []);
+        setError("");
+      } catch (err) {
+        console.error("Error fetching appointments:", err);
+        setError("Failed to load your appointments");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchAppointments();
+    }
+  }, [token]);
 
   // Remove item by index
-  const handleReject = (index) => {
-    setLocalFeedData((prev) => prev.filter((_, i) => i !== index));
-  };
+  const handleReject = async (index) => {
+  const request = localFeedData[index];
 
-  if (!localFeedData && !error) {
+  try {
+    await axios.post(
+      "http://localhost:3000/user/cancelAppointment",
+      {
+        hospitalName: request.hospitalName,
+        bloodGroup: request.bloodGroup,
+        location: request.location,
+      },
+      { headers: { token } }
+    );
+
+    setLocalFeedData((prev) => prev.filter((_, i) => i !== index));
+
+    alert(`Appointment removed successfully for ${request.hospitalName} - ${request.bloodGroup}`);
+  } catch (err) {
+    console.error("Error cancelling appointment:", err);
+    alert("Failed to remove appointment. Please try again later.");
+  }
+};
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">

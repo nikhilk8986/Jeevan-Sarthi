@@ -175,6 +175,42 @@ router.post("/bookAppointments", auth, async (req, res) => {
   }
 });
 
+
+router.post("/cancelAppointment", auth, async (req, res) => {
+  try {
+    const { hospitalName, bloodGroup, location } = req.body;
+    const username = req.username;
+
+    if (!username || !hospitalName || !bloodGroup || !location?.latitude || !location?.longitude) {
+      return res.status(400).json({
+        error: "username, hospitalName, bloodGroup, and location (latitude & longitude) are required"
+      });
+    }
+
+    const result = await UserAppointments.updateOne(
+      { username },
+      {
+        $pull: {
+          appointments: {
+            hospitalName,
+            bloodGroup,
+            location
+          }
+        }
+      }
+    );
+
+    res.status(200).json({
+      message: "Appointment removed successfully",
+      data: result
+    });
+  } catch (err) {
+    console.error("Error removing appointment:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 router.get('/myAppointments', auth, async (req, res) => {
     const username = req.username;
     try {

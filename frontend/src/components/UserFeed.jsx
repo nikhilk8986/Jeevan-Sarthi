@@ -32,12 +32,48 @@ export function UserFeed() {
     if (token) fetchFeed();
   }, [token]);
 
-  const toggleAccept = (index) => {
+  const toggleAccept = async (index) => {
+  const isCurrentlyAccepted = acceptedRequests[index];
+  const request = feedData[index];
+
+  try {
+    if (!isCurrentlyAccepted) {
+      // Accept → book appointment
+      await axios.post(
+        "http://localhost:3000/user/bookAppointments",
+        {
+          hospitalName: request.hospitalName,
+          bloodGroup: request.bloodGroup,
+          location: request.location
+        },
+        { headers: { token } }
+      );
+      console.log("Appointment booked successfully");
+    } else {
+      // Reject → cancel appointment
+      await axios.post(
+        "http://localhost:3000/user/cancelAppointment",
+        {
+          hospitalName: request.hospitalName,
+          bloodGroup: request.bloodGroup,
+          location: request.location
+        },
+        { headers: { token } }
+      );
+      console.log("Appointment removed successfully");
+    }
+
+    // Update local UI
     setAcceptedRequests((prev) => ({
       ...prev,
-      [index]: !prev[index], // Toggle between true and false
+      [index]: !isCurrentlyAccepted,
     }));
-  };
+  } catch (err) {
+    console.error("Error updating appointment:", err);
+  }
+};
+
+
 
   if (loading) {
     return (

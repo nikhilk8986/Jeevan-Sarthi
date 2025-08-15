@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { toast } from "sonner";
 
 export function BloodInventory() {
   const { token } = useAuth();
@@ -90,6 +91,28 @@ export function BloodInventory() {
     }
   };
 
+  const handleRequestBlood = async (bloodType) => {
+  try {
+    await axios.post(
+      "http://localhost:3000/hospital/request",
+      {
+        bloodGroup: bloodType,
+        // if hospital location is known in frontend
+        latitude: feedData.latitude,  
+        longitude: feedData.longitude
+      },
+      { headers: { token } }
+    );
+
+    console.log(`Request for ${bloodType} sent successfully`);
+    alert(`Blood request for ${bloodType} submitted successfully`);
+  } catch (err) {
+    console.error("Error sending blood request:", err);
+    setError("Failed to send blood request");
+  }
+};
+
+
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (error) return <p className="text-center mt-10 text-red-600">{error}</p>;
   if (!feedData) return null; // Safety check
@@ -148,6 +171,12 @@ export function BloodInventory() {
                     className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                   >
                     {expandedType === blood.type ? "Cancel" : "Use"}
+                  </button>
+                  <button
+                    onClick={() => handleRequestBlood(blood.type)}
+                    className="w-full my-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    Request
                   </button>
 
                   {expandedType === blood.type && (

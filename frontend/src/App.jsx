@@ -22,7 +22,7 @@ function App() {
       <BrowserRouter>
           <Routes>
               <Route path='/' element={<Layout/>}>
-                <Route index element={<BloodDonate/>}/>
+                <Route index element={<HeroSection/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/register' element={<Register/>}/>
                 <Route path='/filldata' element={<FillData/>}/>
