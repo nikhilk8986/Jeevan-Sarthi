@@ -16,7 +16,7 @@ import { useRef } from "react"
 import { useAuth } from "../context/AuthContext"
 import axios from 'axios'
 export function LoginCard() {
-  const { login } = useAuth();
+  const { login, hospitalLogin } = useAuth();
   const usernameRef=useRef();
   const passwordRef=useRef();
   const navigate = useNavigate();
@@ -70,9 +70,9 @@ export function LoginCard() {
         ).then(response => {
           console.log("Response:", response.data);
           const token = response.data.token;
-          login(token);
+          hospitalLogin(token);
           if(response.status === 200){
-            setTimeout(() => navigate('/hospitaldashboard'), 100);
+            setTimeout(() => navigate('/'), 100);
           }
       }).catch(error => {
         console.error("Error:", error.response?.data || error.message);
@@ -94,7 +94,7 @@ export function LoginCard() {
     const token = response.data.token;
     login(token);
     if(response.status === 200){
-      setTimeout(() => navigate('/UserFeed'), 100);
+      setTimeout(() => navigate('/'), 100);
     }
 })
 .catch(error => {

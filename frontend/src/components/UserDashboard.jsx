@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext"; // so we can get token
 
 export function UserDashboard() {
-  const { token } = useAuth();
+  const { userToken } = useAuth();
   const [localFeedData, setLocalFeedData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ export function UserDashboard() {
     const fetchAppointments = async () => {
       try {
         const res = await axios.get("http://localhost:3000/user/myAppointments", {
-          headers: { token },
+          headers: { token: userToken },
         });
         setLocalFeedData(res.data.feed || []);
         setError("");
@@ -25,10 +25,10 @@ export function UserDashboard() {
       }
     };
 
-    if (token) {
+    if (userToken) {
       fetchAppointments();
     }
-  }, [token]);
+  }, [userToken]);
 
   // Remove item by index
   const handleReject = async (index) => {
@@ -42,7 +42,7 @@ export function UserDashboard() {
         bloodGroup: request.bloodGroup,
         location: request.location,
       },
-      { headers: { token } }
+      { headers: { token: userToken } }
     );
 
     setLocalFeedData((prev) => prev.filter((_, i) => i !== index));
@@ -88,7 +88,10 @@ export function UserDashboard() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Your Dashboard</h1>
+          <div className="flex justify-center items-center mb-4">
+            <img src="/src/assets/blood.svg" alt="Blood Donation" className="w-16 h-16 mr-4" />
+            <h1 className="text-4xl font-bold text-gray-800">Your Dashboard</h1>
+          </div>
           <p className="text-gray-600">
             You volunteered for the following requests! <br />
             Please be present at the hospital or take someone who is willing to
@@ -118,7 +121,7 @@ export function UserDashboard() {
                       <div>
                         <img
                           className="size-10 rounded-box"
-                          src="https://img.daisyui.com/images/profile/demo/1@94.webp"
+                          src="/src/assets/blood.svg"
                           alt="Hospital"
                         />
                       </div>

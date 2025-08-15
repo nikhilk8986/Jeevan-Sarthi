@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 export function BloodInventory() {
-  const { token } = useAuth();
+  const { hospitalToken, userToken } = useAuth();
   const [feedData, setFeedData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -18,7 +18,7 @@ export function BloodInventory() {
         setLoading(true);
         const response = await axios.get(
           "http://localhost:3000/hospital/bloodLevels",
-          { headers: { token } }
+          { headers: { token: hospitalToken } }
         );
         console.log("fetched data from backend", response.data);
         setFeedData(response.data);
@@ -39,12 +39,12 @@ export function BloodInventory() {
         console.error("Error fetching feed:", err);
         setError("Failed to load feed data");
       } finally {
-        setTimeout(() => setLoading(false), 2000);
+        setLoading(false);
       }
     };
 
-    if (token) bloodlevels();
-  }, [token]);
+    if (hospitalToken) bloodlevels();
+  }, [hospitalToken]);
 
   const handleUseBlood = async (bloodType, amount) => {
   if (!amount || amount <= 0) return;
@@ -61,7 +61,7 @@ export function BloodInventory() {
     await axios.post(
       "http://localhost:3000/hospital/bloodUpdate",
       { updateArray },
-      { headers: { token } }
+      { headers: { token: hospitalToken } }
     );
     const updatedBloodTypes = bloodTypes.map(blood => {
       if (blood.type === bloodType) {
@@ -101,7 +101,7 @@ export function BloodInventory() {
         latitude: feedData.latitude,  
         longitude: feedData.longitude
       },
-      { headers: { token } }
+      { headers: { token: hospitalToken } }
     );
 
     console.log(`Request for ${bloodType} sent successfully`);

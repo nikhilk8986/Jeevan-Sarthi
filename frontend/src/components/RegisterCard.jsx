@@ -122,7 +122,7 @@ const [who,setWho]=useState(0);//0==user
         <Button type="button" onClick={handleRegisterClick} className="bg-gray-200 border border-2 w-full">
           Sign Up
         </Button>
-        <h6 className="underline cursor-pointer" onClick={handleTextClick}>login as {who?"user":"hospital"}?</h6>
+        <h6 className="underline cursor-pointer" onClick={handleTextClick}>Register as {who?"user":"hospital"}?</h6>
       </CardFooter>
     </Card>
   )

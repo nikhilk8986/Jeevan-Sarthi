@@ -6,37 +6,38 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { HospitalDashboard } from "./HospitalDashboard";
+import { useAuth } from "../context/AuthContext";
 
 export default function BloodDonate() {
-  const navigate=useNavigate();
-  const usernameRef=useRef();
-  const bloodRef=useRef(); 
-  const volumeRef=useRef();
+  const navigate = useNavigate();
+  const { hospitalToken } = useAuth();
+  const usernameRef = useRef();
+  const bloodRef = useRef(); 
+  const volumeRef = useRef();
 
   function submitHandler(){
-    // const username=usernameRef.current.value;
-    // const name=nameRef.current.value;
-    const username=usernameRef.current.value;
-    const bloodGroup=bloodRef.current.value;
-    const volume=volumeRef.current.value;
+    const username = usernameRef.current.value;
+    const bloodGroup = bloodRef.current.value;
+    const volume = volumeRef.current.value;
 
-    const token=localStorage.getItem('token');
     axios.post('http://localhost:3000/hospital/donate',
-      { donorUsername:username,
-        bloodGroup:bloodGroup,
-        volume:volume
+      { 
+        donorUsername: username,
+        bloodGroup: bloodGroup,
+        volume: volume
       },
       {
-        headers:{
-          token:token
+        headers: {
+          token: hospitalToken
         }
       }
     ).then(
-      res=>console.log(res.data.message),
-      navigate('/hospitaldashboard')
-  ).catch(
-      err=>console.log(err)
+      res => {
+        console.log(res.data.message);
+        navigate('/hospitaldashboard');
+      }
+    ).catch(
+      err => console.log(err)
     )
   }
 

@@ -81,7 +81,7 @@ export const columns = [
 ]
 
 export function DataTableDemo() {
-  const { token } = useAuth()
+  const { hospitalToken } = useAuth()
   const [data, setData] = React.useState([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState(null)
@@ -96,7 +96,7 @@ export function DataTableDemo() {
       try {
         setLoading(true)
         const res = await axios.get("http://localhost:3000/hospital/getDonors", {
-          headers: { token },
+          headers: { token: hospitalToken },
         })
         console.log("Fetched donors:", res.data.donors)
         setData(res.data.donors || [])
@@ -109,8 +109,8 @@ export function DataTableDemo() {
       }
     }
 
-    if (token) fetchDonors()
-  }, [token])
+    if (hospitalToken) fetchDonors()
+  }, [hospitalToken])
 
   const table = useReactTable({
     data,

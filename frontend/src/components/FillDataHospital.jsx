@@ -6,39 +6,40 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { HospitalDashboard } from "./HospitalDashboard";
-
+import { useAuth } from "../context/AuthContext";
 
 export default function FillDataHospital() {
-  const navigate=useNavigate();
-  const usernameRef=useRef();
-  const nameRef=useRef(); 
-  const addressRef=useRef();
-  const phoneRef=useRef();
-  const emailRef=useRef();
+  const navigate = useNavigate();
+  const { hospitalToken } = useAuth();
+  const usernameRef = useRef();
+  const nameRef = useRef(); 
+  const addressRef = useRef();
+  const phoneRef = useRef();
+  const emailRef = useRef();
 
   function submitHandler(){
-    // const username=usernameRef.current.value;
-    // const name=nameRef.current.value;
-    const phone=phoneRef.current.value;
-    const email=emailRef.current.value;
-    const address=addressRef.current.value;
-    const token=localStorage.getItem('token');
+    const phone = phoneRef.current.value;
+    const email = emailRef.current.value;
+    const address = addressRef.current.value;
+    
     axios.post('http://localhost:3000/hospital/fillData',
-      {email:email,
-        address:address,
-        phone:phone
+      {
+        email: email,
+        address: address,
+        phone: phone
       },
       {
-        headers:{
-          token:token
+        headers: {
+          token: hospitalToken
         }
       }
     ).then(
-      res=>console.log(res.data.message),
-      navigate('/hospitaldashboard')
-  ).catch(
-      err=>console.log(err)
+      res => {
+        console.log(res.data.message);
+        navigate('/hospitaldashboard');
+      }
+    ).catch(
+      err => console.log(err)
     )
   }
 

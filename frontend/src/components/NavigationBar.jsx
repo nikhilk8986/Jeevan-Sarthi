@@ -2,20 +2,38 @@ import {useNavigate} from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../context/AuthContext"
 export default function NavigationBar() {
-    const { isLoggedIn, login, logout } = useAuth();
+    const { isLoggedIn, isHospitalLoggedIn, login, logout, hospitalLogout } = useAuth();
     const navigate = useNavigate();
     function handleLogin(){
         navigate("/login");
     }
     function handleTitleClick(){
-        navigate('/')
+        if(isLoggedIn){
+            navigate("/userfeed");
+        }else if(isHospitalLoggedIn){
+            navigate("/hospitaldashboard");
+        }else{
+            navigate('/');
+        }
     }
     function handleRegister(){
         navigate("/register");
     }
     function handleLogout(){
-        logout();
-        navigate("/login");
+        if(isLoggedIn){
+            logout();
+            navigate("/login");
+        }else{
+            hospitalLogout();
+            navigate("/login");
+        }
+    }
+    function handleDashboardClick(){
+        if(isLoggedIn){
+            navigate("/userdashboard");
+        }else{
+            navigate("/hospitaldashboard");
+        }
     }
     return (
         <div className="flex justify-between items-center py-[2%] bg-blue-800 px-[2%] ">
@@ -24,9 +42,9 @@ export default function NavigationBar() {
             
             {/* Right side */}
             <div className="flex gap-4">
-                {isLoggedIn?(
+                {(isLoggedIn || isHospitalLoggedIn)?(
                     <>
-                    <Button className='bg-white'>Dashboard</Button>
+                    <Button className='bg-white' onClick={handleDashboardClick}>Dashboard</Button>
                     <Button className='bg-white' onClick={handleLogout}>Logout</Button>
                     </>
                 ):(

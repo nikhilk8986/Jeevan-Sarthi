@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 export function UserFeed() {
-  const { token } = useAuth();
+  const { userToken } = useAuth();
   const [feedData, setFeedData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -16,7 +16,9 @@ export function UserFeed() {
       try {
         setLoading(true);
         const response = await axios.get("http://localhost:3000/user/feed", {
-          headers: { token },
+          headers: {
+            token: userToken
+          }
         });
         console.log("fetched data from backend", response.data);
         setFeedData(response.data);
@@ -25,12 +27,14 @@ export function UserFeed() {
         console.error("Error fetching feed:", err);
         setError("Failed to load feed data");
       } finally {
-        setTimeout(() => setLoading(false), 2000);
+        setLoading(false);
       }
     };
 
-    if (token) fetchFeed();
-  }, [token]);
+    if (userToken) {
+      fetchFeed();
+    }
+  }, [userToken]);
 
   const toggleAccept = async (index) => {
   const isCurrentlyAccepted = acceptedRequests[index];
@@ -46,7 +50,7 @@ export function UserFeed() {
           bloodGroup: request.bloodGroup,
           location: request.location
         },
-        { headers: { token } }
+        { headers: { token: userToken } }
       );
       console.log("Appointment booked successfully");
     } else {
@@ -58,7 +62,7 @@ export function UserFeed() {
           bloodGroup: request.bloodGroup,
           location: request.location
         },
-        { headers: { token } }
+        { headers: { token: userToken } }
       );
       console.log("Appointment removed successfully");
     }
@@ -106,7 +110,10 @@ export function UserFeed() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Your Feed</h1>
+          <div className="flex justify-center items-center mb-4">
+            <img src="/src/assets/blood.svg" alt="Blood Donation" className="w-16 h-16 mr-4" />
+            <h1 className="text-4xl font-bold text-gray-800">Your Feed</h1>
+          </div>
           <p className="text-gray-600">Stay updated with the latest information</p>
         </div>
 
@@ -131,9 +138,9 @@ export function UserFeed() {
                         {String(index + 1).padStart(2, "0")}
                       </div>
                       <div>
-                        <img
-                          className="size-10 rounded-box"
-                          src="https://img.daisyui.com/images/profile/demo/1@94.webp"
+                        <img 
+                          className="size-10 rounded-box" 
+                          src="/src/assets/blood.svg"
                           alt="Hospital"
                         />
                       </div>
