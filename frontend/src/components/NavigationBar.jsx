@@ -38,7 +38,7 @@ export default function NavigationBar() {
     return (
         <div className="flex justify-between items-center py-[2%] bg-blue-800 px-[2%] ">
             {/* Left side */}
-            <div className='text-3xl font-bold cursor-pointer' onClick={handleTitleClick}>Jeevan Sarthi</div>
+            <div className='text-3xl text-white font-bold cursor-pointer' onClick={handleTitleClick}>Jeevan Sarthi</div>
             
             {/* Right side */}
             <div className="flex gap-4">
