@@ -1,6 +1,7 @@
 import * as React from "react"
 import axios from "axios"
-import { useAuth } from "../context/AuthContext" // assuming your AuthContext provides token
+import { useAuth } from "../context/AuthContext"
+import { API_ENDPOINTS } from "../config/config"
 import {
   flexRender,
   getCoreRowModel,
@@ -95,7 +96,7 @@ export function DataTableDemo() {
     const fetchDonors = async () => {
       try {
         setLoading(true)
-        const res = await axios.get("http://localhost:3000/hospital/getDonors", {
+        const res = await axios.get(API_ENDPOINTS.HOSPITAL_GET_DONORS, {
           headers: { token: hospitalToken },
         })
         console.log("Fetched donors:", res.data.donors)

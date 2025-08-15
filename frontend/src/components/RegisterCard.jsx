@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import {
   Card,
   CardAction,
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
 import axios from 'axios'
+import { API_ENDPOINTS } from "../config/config"
 
 export function RegisterCard() {
     const usernameRef = useRef();
@@ -20,6 +21,30 @@ export function RegisterCard() {
     const passwordRef = useRef();
     const confirmPasswordRef = useRef();
     const navigate  = useNavigate()
+    const [location, setLocation] = useState({ latitude: null, longitude: null });
+    const [locationError, setLocationError] = useState("");
+
+    // Get user location on component mount
+    useEffect(() => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLocation({
+              latitude: position.coords.latitude.toString(),
+              longitude: position.coords.longitude.toString()
+            });
+            setLocationError("");
+          },
+          (error) => {
+            console.error("Location error:", error);
+            setLocationError("Location access denied. Some features may be limited.");
+          }
+        );
+      } else {
+        setLocationError("Geolocation not supported by this browser.");
+      }
+    }, []);
+
 function handleLogin(){
     navigate("/login")
 }
@@ -34,13 +59,18 @@ const [who,setWho]=useState(0);//0==user
     const password = passwordRef.current.value;
     const confirmPassword = confirmPasswordRef.current.value;
     if(who){
-        axios.post('http://localhost:3000/hospital/signup',
+        axios.post(API_ENDPOINTS.HOSPITAL_SIGNUP,
           {
             hospitalUsername:username,
             hospitalName:name,
-
             password:password,
             confirmPassword:confirmPassword
+          },
+          {
+            headers: {
+              latitude: location.latitude || "",
+              longitude: location.longitude || ""
+            }
           }
         ).then(response => {
           console.log("Response:", response.data);
@@ -51,12 +81,19 @@ const [who,setWho]=useState(0);//0==user
         console.error("Error:", error.response?.data || error.message);
     });
       }else{
-        axios.post("http://localhost:3000/user/signup", {
+        axios.post(API_ENDPOINTS.USER_SIGNUP, {
     username: username,
     name:name,
     password: password,
     confirmPassword: confirmPassword
-})
+},
+{
+  headers: {
+    latitude: location.latitude || "",
+    longitude: location.longitude || ""
+  }
+}
+)
 .then(response => {
     console.log("Response:", response.data);
     if(response.status === 200){

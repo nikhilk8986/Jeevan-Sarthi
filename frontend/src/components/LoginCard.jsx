@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom"
 import { useRef } from "react"
 import { useAuth } from "../context/AuthContext"
 import axios from 'axios'
+import { API_ENDPOINTS } from "../config/config"
+
 export function LoginCard() {
   const { login, hospitalLogin } = useAuth();
   const usernameRef=useRef();
@@ -56,7 +58,7 @@ export function LoginCard() {
       const username=usernameRef.current.value;
     const password=passwordRef.current.value;
       if(who){
-        axios.post('http://localhost:3000/hospital/signin',
+        axios.post(API_ENDPOINTS.HOSPITAL_SIGNIN,
           {
             hospitalUsername:username,
             password:password
@@ -78,7 +80,7 @@ export function LoginCard() {
         console.error("Error:", error.response?.data || error.message);
     });
       }else{
-        axios.post("http://localhost:3000/user/signin", {
+        axios.post(API_ENDPOINTS.USER_SIGNIN, {
     username: username,
     password: password
 },

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext"; // so we can get token
+import { useAuth } from "../context/AuthContext";
+import { API_ENDPOINTS } from "../config/config";
 
 export function UserDashboard() {
   const { userToken } = useAuth();
@@ -12,7 +13,7 @@ export function UserDashboard() {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/user/myAppointments", {
+        const res = await axios.get(API_ENDPOINTS.USER_MY_APPOINTMENTS, {
           headers: { token: userToken },
         });
         setLocalFeedData(res.data.feed || []);
@@ -36,7 +37,7 @@ export function UserDashboard() {
 
   try {
     await axios.post(
-      "http://localhost:3000/user/cancelAppointment",
+      API_ENDPOINTS.USER_CANCEL_APPOINTMENT,
       {
         hospitalName: request.hospitalName,
         bloodGroup: request.bloodGroup,

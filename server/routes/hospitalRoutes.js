@@ -3,7 +3,9 @@ const router=express.Router();
 
 const jwt=require("jsonwebtoken")
 const bcrypt=require("bcrypt")
-const JWT_SECRET="sayan_manna";
+const JWT_SECRET = process.env.JWT_SECRET || "sayan_manna";
+const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 10;
+const NEARBY_DISTANCE_KM = parseInt(process.env.NEARBY_DISTANCE_KM) || 10;
 const {HospitalsDonors,Hospital,BloodManagement,UserModel, RequestsModel}=require("../db/db");
 
 router.use(express.json());
@@ -16,10 +18,10 @@ async function sendTestEmail(recipients) {
   for (const email of recipients) {
     const msg = {
       to: email,
-      from: "sayan2003.dev@gmail.com",
-      subject: "Test Email from Jeevan-Sarthi",
-      text: "Plain text version",
-      html: "<strong>HTML version</strong>"
+      from: process.env.SENDGRID_FROM_EMAIL || "sayan2003.dev@gmail.com",
+      subject: `Blood Request Alert - ${process.env.SENDGRID_FROM_NAME || "Jeevan Sarthi"}`,
+      text: `A hospital near you needs blood. Please check the Jeevan Sarthi app for details.`,
+      html: `<strong>Blood Request Alert</strong><br><br>A hospital near you needs blood. Please check the Jeevan Sarthi app for details.`
     };
 
     try {
@@ -82,7 +84,7 @@ router.post('/signup',async(req,res)=>{
     }
     else{
         try {
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
             await Hospital.create({
                 hospitalUsername,hospitalName, password: hashedPassword,location:{latitude: latitude, longitude: longitude}
             });
@@ -229,7 +231,7 @@ router.post("/request", auth, async (req, res) => {
           { latitude: parseFloat(user.location.latitude), longitude: parseFloat(user.location.longitude) }
         );
 
-        return distance <= 10; // km
+        return distance <= NEARBY_DISTANCE_KM; // km
       })
       .map((user) => user.username); // now username = email
 

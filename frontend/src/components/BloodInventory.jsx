@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { toast } from "sonner";
+import { API_ENDPOINTS } from "../config/config";
 
 export function BloodInventory() {
   const { hospitalToken, userToken } = useAuth();
@@ -17,7 +18,7 @@ export function BloodInventory() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:3000/hospital/bloodLevels",
+          API_ENDPOINTS.HOSPITAL_BLOOD_LEVELS,
           { headers: { token: hospitalToken } }
         );
         console.log("fetched data from backend", response.data);
@@ -59,7 +60,7 @@ export function BloodInventory() {
 
   try {
     await axios.post(
-      "http://localhost:3000/hospital/bloodUpdate",
+      API_ENDPOINTS.HOSPITAL_BLOOD_UPDATE,
       { updateArray },
       { headers: { token: hospitalToken } }
     );
@@ -94,7 +95,7 @@ export function BloodInventory() {
   const handleRequestBlood = async (bloodType) => {
   try {
     await axios.post(
-      "http://localhost:3000/hospital/request",
+      API_ENDPOINTS.HOSPITAL_REQUEST_BLOOD,
       {
         bloodGroup: bloodType,
         // if hospital location is known in frontend

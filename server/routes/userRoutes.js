@@ -3,7 +3,8 @@ const router=express.Router();
 
 const jwt=require("jsonwebtoken")
 const bcrypt=require("bcrypt")
-const JWT_SECRET="sayan_manna";
+const JWT_SECRET = process.env.JWT_SECRET || "sayan_manna";
+const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 10;
 const { HospitalsDonors,Hospital,BloodManagement,UserModel, UserAppointments, RequestsModel}=require("../db/db");
 router.use(express.json());
 
@@ -37,7 +38,7 @@ router.post('/signup',async(req,res)=>{
     }
     else{
         try {
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
             await UserModel.create({
                 username,name, password: hashedPassword, location:{latitude: latitude, longitude: longitude}
             });

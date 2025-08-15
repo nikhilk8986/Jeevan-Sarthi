@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { API_ENDPOINTS } from "../config/config";
 
 export function UserFeed() {
   const { userToken } = useAuth();
@@ -15,7 +16,7 @@ export function UserFeed() {
     const fetchFeed = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:3000/user/feed", {
+        const response = await axios.get(API_ENDPOINTS.USER_FEED, {
           headers: {
             token: userToken
           }

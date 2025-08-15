@@ -7,6 +7,7 @@ import { useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { API_ENDPOINTS } from "../config/config";
 
 export default function FillDataHospital() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function FillDataHospital() {
     const email = emailRef.current.value;
     const address = addressRef.current.value;
     
-    axios.post('http://localhost:3000/hospital/fillData',
+    axios.post(API_ENDPOINTS.HOSPITAL_FILL_DATA,
       {
         email: email,
         address: address,

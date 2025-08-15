@@ -7,6 +7,7 @@ import { useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { API_ENDPOINTS } from "../config/config";
 
 export default function BloodDonate() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function BloodDonate() {
     const bloodGroup = bloodRef.current.value;
     const volume = volumeRef.current.value;
 
-    axios.post('http://localhost:3000/hospital/donate',
+    axios.post(API_ENDPOINTS.HOSPITAL_DONATE,
       { 
         donorUsername: username,
         bloodGroup: bloodGroup,

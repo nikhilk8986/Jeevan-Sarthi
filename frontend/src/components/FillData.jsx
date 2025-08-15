@@ -7,6 +7,7 @@ import { useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { API_ENDPOINTS } from "../config/config";
 
 export default function FillData() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export default function FillData() {
     const phone = phoneRef.current.value;
     const sex = sexRef.current.value;
 
-    axios.post('http://localhost:3000/user/fillData',
+    axios.post(API_ENDPOINTS.USER_FILL_DATA,
       {
         address: address,
         DOB: DOB,
