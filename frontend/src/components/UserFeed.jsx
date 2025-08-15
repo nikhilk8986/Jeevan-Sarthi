@@ -45,7 +45,7 @@ export function UserFeed() {
     if (!isCurrentlyAccepted) {
       // Accept → book appointment
       await axios.post(
-        "http://localhost:3000/user/bookAppointments",
+        "https://jeevan-sarathi-backend.vercel.app/user/bookAppointments",
         {
           hospitalName: request.hospitalName,
           bloodGroup: request.bloodGroup,
@@ -57,7 +57,7 @@ export function UserFeed() {
     } else {
       // Reject → cancel appointment
       await axios.post(
-        "http://localhost:3000/user/cancelAppointment",
+        "https://jeevan-sarathi-backend.vercel.app/user/cancelAppointment",
         {
           hospitalName: request.hospitalName,
           bloodGroup: request.bloodGroup,
