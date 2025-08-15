@@ -7,6 +7,7 @@ import { useState } from "react"
 import { BloodInventory } from "./BloodInventory"
 import { DataTableDemo } from "./DonationList"
 import {CarouselDemo} from './DashboardSlider'
+import { useNavigate } from "react-router-dom"
 
 
 
@@ -15,10 +16,14 @@ export function HospitalDashboard() {
   const [bedGoal, setBedGoal] = useState(89);
   const [staffGoal, setStaffGoal] = useState(156);
   const [activeMenu, setActiveMenu] = useState("dashboard");
-
+  const navigate = useNavigate();
   const handleIncrement = (setter, currentValue) => {
     setter(currentValue + 1);
   };
+
+  function handleDonate(){
+    navigate('/blooddonate')
+  }
 
   const handleDecrement = (setter, currentValue) => {
     if (currentValue > 0) {
@@ -186,8 +191,17 @@ export function HospitalDashboard() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-center items-center mt-8 w-full">
-                <CarouselDemo/>
+            <div className="card w-96 bg-base-100 card-md shadow-sm">
+              <div className="card-body bg-blue-200 rounded-md mt-10">
+                <h2 className="card-title">Medium Card</h2>
+                <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
+                <div className="justify-end card-actions">
+                <button onClick={handleDonate} className="btn btn-primary">Buy Now</button>
+              </div>
+            </div>
+            
+            
+  
             </div>
           </div>
         ) : activeMenu === "inventory" ? (

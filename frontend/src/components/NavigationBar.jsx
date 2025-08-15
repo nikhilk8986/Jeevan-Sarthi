@@ -18,7 +18,7 @@ export default function NavigationBar() {
         navigate("/login");
     }
     return (
-        <div className="flex justify-between items-center py-[2%] bg-[#d3aeff] px-[2%] ">
+        <div className="flex justify-between items-center py-[2%] bg-blue-800 px-[2%] ">
             {/* Left side */}
             <div className='text-3xl font-bold cursor-pointer' onClick={handleTitleClick}>Jeevan Sarthi</div>
             

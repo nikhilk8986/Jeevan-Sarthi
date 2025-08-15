@@ -1,6 +1,6 @@
-"use client"
-
 import * as React from "react"
+import axios from "axios"
+import { useAuth } from "../context/AuthContext" // assuming your AuthContext provides token
 import {
   flexRender,
   getCoreRowModel,
@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -17,9 +17,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -32,14 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const data = [
-  { id: "1", volume: 316, name: "Sayan", email: "sayan@sayan.com" },
-  { id: "2", volume: 242, name: "Nikhil", email: "nikhil@nikhil.com" },
-  { id: "3", volume: 837, name: "Ayush", email: "ayush@ayush.com" },
-  { id: "4", volume: 874, name: "Ram", email: "ayush@ayush.com" },
-  { id: "5", volume: 721, name: "Harsh", email: "harsh@harsh.com" },
-]
-
+// columns stay same, but no static data
 export const columns = [
   {
     id: "select",
@@ -66,9 +56,7 @@ export const columns = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "email",
@@ -86,19 +74,43 @@ export const columns = [
   {
     accessorKey: "volume",
     header: () => <div className="text-right">Volume</div>,
-    cell: ({ row }) => {
-      
-
-      return <div className="text-right font-medium">{row.getValue("volume")}</div>
-    },
-  }
+    cell: ({ row }) => (
+      <div className="text-right font-medium">{row.getValue("volume")}</div>
+    ),
+  },
 ]
 
 export function DataTableDemo() {
+  const { token } = useAuth()
+  const [data, setData] = React.useState([])
+  const [loading, setLoading] = React.useState(true)
+  const [error, setError] = React.useState(null)
+
   const [sorting, setSorting] = React.useState([])
   const [columnFilters, setColumnFilters] = React.useState([])
   const [columnVisibility, setColumnVisibility] = React.useState({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  React.useEffect(() => {
+    const fetchDonors = async () => {
+      try {
+        setLoading(true)
+        const res = await axios.get("http://localhost:3000/hospital/getDonors", {
+          headers: { token },
+        })
+        console.log("Fetched donors:", res.data.donors)
+        setData(res.data.donors || [])
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching donors:", err)
+        setError("Failed to load donor data")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (token) fetchDonors()
+  }, [token])
 
   const table = useReactTable({
     data,
@@ -118,6 +130,9 @@ export function DataTableDemo() {
       rowSelection,
     },
   })
+
+  if (loading) return <div className="text-center py-6">Loading donors...</div>
+  if (error) return <div className="text-center py-6 text-red-600">{error}</div>
 
   return (
     <div className="px-20">
@@ -196,7 +211,7 @@ export function DataTableDemo() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No donors found.
                 </TableCell>
               </TableRow>
             )}

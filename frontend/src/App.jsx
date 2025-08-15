@@ -32,6 +32,7 @@ function App() {
                 <Route path='/filldatahospital' element={<FillDataHospital/>}/>
                 <Route path='/datatable' element={<DataTableDemo/>}/>
                 <Route path='/hospitaldashboard' element={<HospitalDashboard/>}/>
+                <Route path='/blooddonate' element={<BloodDonate/>}/>
               </Route>
           </Routes>
       </BrowserRouter>

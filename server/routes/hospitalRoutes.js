@@ -304,7 +304,15 @@ router.post('/donate', auth, async (req, res) => {
         res.status(500).json({ message: "Server error during donation" });
     }
 });
-
+router.get('/getDonors', auth,async (req, res)=>{
+    try{
+        const hospital = await HospitalsDonors.findOne({hospitalUsername:req.hospitalUsername});
+        const donors = hospital.donors;
+        res.status(200).json({donors:donors});
+    }catch(err){
+        res.status(500).json({message: err});
+    }
+})
 
 router.get('/bloodLevels',auth,async(req,res)=>{
     const hospitalUsername=req.hospitalUsername;

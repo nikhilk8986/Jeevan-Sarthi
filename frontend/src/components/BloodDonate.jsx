@@ -8,7 +8,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { HospitalDashboard } from "./HospitalDashboard";
 
-
 export default function BloodDonate() {
   const navigate=useNavigate();
   const usernameRef=useRef();
@@ -24,9 +23,9 @@ export default function BloodDonate() {
 
     const token=localStorage.getItem('token');
     axios.post('http://localhost:3000/hospital/donate',
-      { email:email,
-        address:address,
-        phone:phone
+      { donorUsername:username,
+        bloodGroup:bloodGroup,
+        volume:volume
       },
       {
         headers:{
