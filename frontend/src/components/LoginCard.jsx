@@ -143,7 +143,7 @@ export function LoginCard() {
           <form aria-busy={isLoading}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Username</Label>
                 <Input 
                   ref={usernameRef}
                   id="email"
